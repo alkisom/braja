@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jadwal Piket Layanan Administrasi Pembayaran</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f4f8;
+            color: #333;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        body.night-mode {
+            background-color: #1e1e1e;
+            color: #f0f4f8;
+        }
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        body.night-mode .container {
+            background-color: #2c2c2c;
+            color: #f0f4f8;
+        }
+        h1 {
+            color: #0056b3;
+            margin-bottom: 20px;
+        }
+        body.night-mode h1 {
+            color: #e0e0e0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            text-align: center;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+        }
+        th {
+            background-color: #0056b3;
+            color: #fff;
+        }
+        body.night-mode th {
+            background-color: #333;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        body.night-mode tr:nth-child(even) {
+            background-color: #444;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        body.night-mode tr:hover {
+            background-color: #555;
+        }
+        .btn, .contact-btn, .print-btn, .toggle-btn {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            margin: 5px;
+            display: inline-block;
+        }
+        .contact-btn {
+            background-color: #25D366;
+        }
+        .contact-btn:hover {
+            background-color: #128C7E;
+        }
+        .print-btn {
+            background-color: #17a2b8;
+        }
+        .print-btn:hover {
+            background-color: #117a8b;
+        }
+        .toggle-btn {
+            background-color: #ffc107;
+            color: #333;
+        }
+        .toggle-btn:hover {
+            background-color: #e0a800;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            width: 80%;
+            max-width: 600px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        .modal-close {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 1.5em;
+            cursor: pointer;
+        }
+        .modal-close:hover {
+            color: #f00;
+        }
+        .modal-content form {
+            margin-top: 20px;
+        }
+        .modal-content form label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        .modal-content form input, .modal-content form textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .modal-content form button {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .modal-content form button:hover {
+            background-color: #218838;
+        }
+        @media print {
+            body {
+                background-color: #fff;
+                color: #000;
+            }
+            .container {
+                box-shadow: none;
+                border: none;
+                padding: 0;
+                text-align: center;
+            }
+            table {
+                margin: 0 auto;
+                border-collapse: collapse;
+                width: 100%;
+            }
+            th, td {
+                border: 1px solid #000;
+                padding: 10px;
+            }
+            th {
+                background-color: #ddd;
+                color: #000;
+            }
+            .btn, .toggle-btn, .print-btn, .modal-close, .whatsapp-btn {
+                display: none;
+            }
+            .print-title {
+                text-align: center;
+                font-size: 1.5em;
+                margin-bottom: 20px;
+                color: #000;
+            }
+        }
+        .whatsapp-btn {
+            background-color: #25D366;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 0.9em;
+            margin: 2px;
+        }
+        .whatsapp-btn:hover {
+            background-color: #128C7E;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Jadwal Piket Layanan Administrasi Pembayaran Pondok Pesantren Baitun Nur</h1>
+
+        <button class="print-btn" onclick="printTable()">Print Jadwal</button>
+        <button class="toggle-btn" onclick="toggleMode()">Mode Siang/Malam</button>
+        <button class="btn" onclick="openModal()">Edit Semua</button>
+
+        <table id="piketTable">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Hari</th>
+                    <th>Nama</th>
+                    <th>No HP</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>Senin</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Selasa</td>
+                    <td>Mar'atus Soleha</td>
+                    <td>085266720599</td>
+                    <td><a href="https://wa.me/085266720599" class="whatsapp-btn" target="_blank">Hubungi WA</a></td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>Rabu</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>Kamis</td>
+                    <td>Al'Khisom</td>
+                    <td>085664237088</td>
+                    <td><a href="https://wa.me/085664237088" class="whatsapp-btn" target="_blank">Hubungi WA</a></td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>Jum'at</td>
+                    <td>Muhazirin Farhan Safitra</td>
+                    <td>087810159218</td>
+                    <td><a href="https://wa.me/087810159218" class="whatsapp-btn" target="_blank">Hubungi WA</a></td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td>Sabtu</td>
+                    <td>Resa Salsabila</td>
+                    <td>082181542517</td>
+                    <td><a href="https://wa.me/082181542517" class="whatsapp-btn" target="_blank">Hubungi WA</a></td>
+                </tr>
+                <tr>
+                    <td>7</td>
+                    <td>Minggu</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table
+        </table>
+
+        <!-- Modal Edit Semua -->
+        <div id="editModal" class="modal">
+            <div class="modal-content">
+                <span class="modal-close" onclick="closeModal()">&times;</span>
+                <h2>Edit Jadwal Piket</h2>
+                <form id="editForm">
+                    <label for="headerHari">Header Hari:</label>
+                    <input type="text" id="headerHari" placeholder="Hari" required>
+                    
+                    <label for="headerNama">Header Nama:</label>
+                    <input type="text" id="headerNama" placeholder="Nama" required>
+                    
+                    <label for="headerNoHp">Header No HP:</label>
+                    <input type="text" id="headerNoHp" placeholder="No HP" required>
+                    
+                    <label for="tableData">Data Tabel (format: Hari, Nama, No HP per baris):</label>
+                    <textarea id="tableData" rows="10" required></textarea>
+                    
+                    <button type="submit" class="btn">Simpan</button>
+                </form>
+            </div>
+        </div>
+
+        <script>
+            function openModal() {
+                const header = document.querySelector('#piketTable thead');
+                const tbody = document.querySelector('#piketTable tbody');
+                const tableData = [];
+
+                tbody.querySelectorAll('tr').forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length > 0) {
+                        const hari = cells[1].innerText;
+                        const nama = cells[2].innerText;
+                        const nohp = cells[3].innerText;
+                        tableData.push(`${hari},${nama},${nohp}`);
+                    }
+                });
+
+                document.getElementById('headerHari').value = header.querySelector('th:nth-child(2)').innerText;
+                document.getElementById('headerNama').value = header.querySelector('th:nth-child(3)').innerText;
+                document.getElementById('headerNoHp').value = header.querySelector('th:nth-child(4)').innerText;
+                document.getElementById('tableData').value = tableData.join('\n');
+
+                document.getElementById('editModal').style.display = 'flex';
+            }
+
+            function closeModal() {
+                document.getElementById('editModal').style.display = 'none';
+            }
+
+            document.getElementById('editForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const headerHari = document.getElementById('headerHari').value;
+                const headerNama = document.getElementById('headerNama').value;
+                const headerNoHp = document.getElementById('headerNoHp').value;
+                const tableData = document.getElementById('tableData').value.trim().split('\n');
+
+                const header = document.querySelector('#piketTable thead');
+                const tbody = document.querySelector('#piketTable tbody');
+                
+                header.querySelector('th:nth-child(2)').innerText = headerHari;
+                header.querySelector('th:nth-child(3)').innerText = headerNama;
+                header.querySelector('th:nth-child(4)').innerText = headerNoHp;
+
+                tbody.innerHTML = ''; // Clear existing rows
+                
+                tableData.forEach((row, index) => {
+                    const [hari, nama, nohp] = row.split(',');
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>${hari || '-'}</td>
+                            <td>${nama || '-'}</td>
+                            <td>${nohp || '-'}</td>
+                            <td><a href="https://wa.me/${nohp || ''}" class="whatsapp-btn" target="_blank">Hubungi WA</a></td>
+                        </tr>
+                    `;
+                });
+
+                closeModal();
+            });
+
+            function toggleMode() {
+                document.body.classList.toggle('night-mode');
+            }
+
+            function printTable() {
+                const printWindow = window.open('', '', 'height=600,width=800');
+                printWindow.document.write('<html><head><title>Print Jadwal Piket</title>');
+                printWindow.document.write('<style>table { width: 100%; border-collapse: collapse; margin: 0 auto; } th, td { border: 1px solid black; padding: 10px; text-align: center; } th { background-color: #0056b3; color: white; } @media print { .btn, .toggle-btn, .print-btn, .modal-close, .whatsapp-btn { display: none; } } .print-title { text-align: center; font-size: 1.5em; margin-bottom: 20px; color: #000; } </style>');
+                printWindow.document.write('</head><body >');
+                printWindow.document.write('<div class="print-title">Jadwal Piket Layanan Administrasi Pembayaran Pondok Pesantren Baitun Nur</div>');
+                printWindow.document.write('<div class="container">');
+                printWindow.document.write(document.querySelector('#piketTable').outerHTML);
+                printWindow.document.write('</div>');
+                printWindow.document.write('</body></html>');
+                printWindow.document.close();
+                printWindow.print();
+            }
+        </script>
+    </div>
+</body>
+</html>
