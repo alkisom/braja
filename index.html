@@ -200,23 +200,6 @@
         .whatsapp-btn:hover {
             background-color: #128C7E;
         }
-        @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-            .modal-content {
-                width: 90%;
-            }
-        }
-        @media (max-width: 480px) {
-            th, td {
-                padding: 8px;
-            }
-            .btn, .contact-btn, .print-btn, .toggle-btn {
-                padding: 8px 12px;
-                font-size: 0.9em;
-            }
-        }
     </style>
 </head>
 <body>
@@ -270,15 +253,15 @@
                     <td>5</td>
                     <td>Jum'at</td>
                     <td>Muhazirin Farhan Safitra</td>
-                    <td>085799608863</td>
-                    <td><a href="https://wa.me/085799608863" class="whatsapp-btn" target="_blank">Hubungi WA</a></td>
+                    <td>087810159218</td>
+                    <td><a href="https://wa.me/087810159218" class="whatsapp-btn" target="_blank">Hubungi WA</a></td>
                 </tr>
                 <tr>
                     <td>6</td>
                     <td>Sabtu</td>
-                    <td>Ilham Sabiansyah</td>
-                    <td>085200806467</td>
-                    <td><a href="https://wa.me/085200806467" class="whatsapp-btn" target="_blank">Hubungi WA</a></td>
+                    <td>Resa Salsabila</td>
+                    <td>082181542517</td>
+                    <td><a href="https://wa.me/082181542517" class="whatsapp-btn" target="_blank">Hubungi WA</a></td>
                 </tr>
                 <tr>
                     <td>7</td>
@@ -288,51 +271,111 @@
                     <td></td>
                 </tr>
             </tbody>
+        </table
         </table>
 
+        <!-- Modal Edit Semua -->
         <div id="editModal" class="modal">
             <div class="modal-content">
                 <span class="modal-close" onclick="closeModal()">&times;</span>
                 <h2>Edit Jadwal Piket</h2>
-                <form>
-                    <label for="day">Hari:</label>
-                    <input type="text" id="day" name="day" placeholder="Contoh: Senin">
-
-                    <label for="name">Nama:</label>
-                    <input type="text" id="name" name="name" placeholder="Masukkan Nama">
-
-                    <label for="phone">No HP:</label>
-                    <input type="text" id="phone" name="phone" placeholder="Masukkan No HP">
-
-                    <button type="submit">Simpan Perubahan</button>
+                <form id="editForm">
+                    <label for="headerHari">Header Hari:</label>
+                    <input type="text" id="headerHari" placeholder="Hari" required>
+                    
+                    <label for="headerNama">Header Nama:</label>
+                    <input type="text" id="headerNama" placeholder="Nama" required>
+                    
+                    <label for="headerNoHp">Header No HP:</label>
+                    <input type="text" id="headerNoHp" placeholder="No HP" required>
+                    
+                    <label for="tableData">Data Tabel (format: Hari, Nama, No HP per baris):</label>
+                    <textarea id="tableData" rows="10" required></textarea>
+                    
+                    <button type="submit" class="btn">Simpan</button>
                 </form>
             </div>
         </div>
-    </div>
 
-    <script>
-        function printTable() {
-            window.print();
-        }
+        <script>
+            function openModal() {
+                const header = document.querySelector('#piketTable thead');
+                const tbody = document.querySelector('#piketTable tbody');
+                const tableData = [];
 
-        function toggleMode() {
-            document.body.classList.toggle('night-mode');
-        }
+                tbody.querySelectorAll('tr').forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length > 0) {
+                        const hari = cells[1].innerText;
+                        const nama = cells[2].innerText;
+                        const nohp = cells[3].innerText;
+                        tableData.push(`${hari},${nama},${nohp}`);
+                    }
+                });
 
-        function openModal() {
-            document.getElementById('editModal').style.display = 'flex';
-        }
+                document.getElementById('headerHari').value = header.querySelector('th:nth-child(2)').innerText;
+                document.getElementById('headerNama').value = header.querySelector('th:nth-child(3)').innerText;
+                document.getElementById('headerNoHp').value = header.querySelector('th:nth-child(4)').innerText;
+                document.getElementById('tableData').value = tableData.join('\n');
 
-        function closeModal() {
-            document.getElementById('editModal').style.display = 'none';
-        }
-
-        window.onclick = function(event) {
-            const modal = document.getElementById('editModal');
-            if (event.target == modal) {
-                modal.style.display = 'none';
+                document.getElementById('editModal').style.display = 'flex';
             }
-        }
-    </script>
+
+            function closeModal() {
+                document.getElementById('editModal').style.display = 'none';
+            }
+
+            document.getElementById('editForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const headerHari = document.getElementById('headerHari').value;
+                const headerNama = document.getElementById('headerNama').value;
+                const headerNoHp = document.getElementById('headerNoHp').value;
+                const tableData = document.getElementById('tableData').value.trim().split('\n');
+
+                const header = document.querySelector('#piketTable thead');
+                const tbody = document.querySelector('#piketTable tbody');
+                
+                header.querySelector('th:nth-child(2)').innerText = headerHari;
+                header.querySelector('th:nth-child(3)').innerText = headerNama;
+                header.querySelector('th:nth-child(4)').innerText = headerNoHp;
+
+                tbody.innerHTML = ''; // Clear existing rows
+                
+                tableData.forEach((row, index) => {
+                    const [hari, nama, nohp] = row.split(',');
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>${hari || '-'}</td>
+                            <td>${nama || '-'}</td>
+                            <td>${nohp || '-'}</td>
+                            <td><a href="https://wa.me/${nohp || ''}" class="whatsapp-btn" target="_blank">Hubungi WA</a></td>
+                        </tr>
+                    `;
+                });
+
+                closeModal();
+            });
+
+            function toggleMode() {
+                document.body.classList.toggle('night-mode');
+            }
+
+            function printTable() {
+                const printWindow = window.open('', '', 'height=600,width=800');
+                printWindow.document.write('<html><head><title>Print Jadwal Piket</title>');
+                printWindow.document.write('<style>table { width: 100%; border-collapse: collapse; margin: 0 auto; } th, td { border: 1px solid black; padding: 10px; text-align: center; } th { background-color: #0056b3; color: white; } @media print { .btn, .toggle-btn, .print-btn, .modal-close, .whatsapp-btn { display: none; } } .print-title { text-align: center; font-size: 1.5em; margin-bottom: 20px; color: #000; } </style>');
+                printWindow.document.write('</head><body >');
+                printWindow.document.write('<div class="print-title">Jadwal Piket Layanan Administrasi Pembayaran Pondok Pesantren Baitun Nur</div>');
+                printWindow.document.write('<div class="container">');
+                printWindow.document.write(document.querySelector('#piketTable').outerHTML);
+                printWindow.document.write('</div>');
+                printWindow.document.write('</body></html>');
+                printWindow.document.close();
+                printWindow.print();
+            }
+        </script>
+    </div>
 </body>
 </html>
